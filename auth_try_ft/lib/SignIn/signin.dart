@@ -91,10 +91,12 @@ class _FormContainerState extends State<FormContainer> {
                 decoration: InputDecoration(
                     labelText: "Enter Your Password", filled: true),
               ),
+              ElevatedButton.icon(
+                  onPressed: pickFile,
+                  icon: Icon(Icons.sd_card),
+                  label: const Text("Pick Image")),
               ElevatedButton(
-                  onPressed: pickFile, child: const Text("Pick File")),
-              ElevatedButton(
-                  onPressed: registerUser, child: const Text("Sign Up"))
+                  onPressed: registerUser, child: const Text("Sign Up")),
             ],
           ),
         ),
