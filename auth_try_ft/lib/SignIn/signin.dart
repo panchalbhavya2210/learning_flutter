@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import "package:flutter/material.dart";
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:file_picker/file_picker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
   runApp(const MyForm());
 }
 
@@ -58,6 +62,17 @@ class _FormContainerState extends State<FormContainer> {
     }
   }
 
+  void pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      File file = File(result.files.single.path!);
+    } else {
+      print("An error has been occure");
+      // User canceled the picker
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,6 +91,8 @@ class _FormContainerState extends State<FormContainer> {
                 decoration: InputDecoration(
                     labelText: "Enter Your Password", filled: true),
               ),
+              ElevatedButton(
+                  onPressed: pickFile, child: const Text("Pick File")),
               ElevatedButton(
                   onPressed: registerUser, child: const Text("Sign Up"))
             ],
