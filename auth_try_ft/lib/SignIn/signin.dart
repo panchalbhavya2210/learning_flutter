@@ -1,9 +1,10 @@
 import 'dart:io';
-
 import "package:flutter/material.dart";
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,15 +43,46 @@ class FormContainer extends StatefulWidget {
 class _FormContainerState extends State<FormContainer> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  final storage =
+      FirebaseStorage.instanceFor(bucket: "gs://autheflutter.appspot.com")
+          .ref();
+  final database = FirebaseDatabase.instance.ref();
+  File? _pickedFile;
 
-  void registerUser() async {
+  Future<void> registerUser() async {
+    if (_pickedFile == null) {
+      print('No file selected for upload.');
+      return;
+    }
+
+    final fileName = _pickedFile!.path.split('/').last;
+    final path = 'files/$fileName';
+    final file = File(_pickedFile!.path);
+    print(file);
+
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _email.text,
         password: _password.text,
       );
-      print(userCredential);
+      print(userCredential.user?.uid);
+      final userId = userCredential.user?.uid;
+      if (userId != null) {
+        final path = '$userId/$fileName';
+        final ref = storage.child(path);
+        await ref.putFile(file);
+        final downloadURL = await ref.getDownloadURL();
+
+        await database
+            .child("users/$userId")
+            .set({"email": _email.text, "publicUrl": downloadURL});
+        print("This is url of file : $downloadURL");
+
+        print('User registered and file uploaded: $userId');
+      }
+
+      print('User registered and file uploaded: ${userCredential.user?.uid}');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -62,13 +94,16 @@ class _FormContainerState extends State<FormContainer> {
     }
   }
 
-  void pickFile() async {
+  Future<void> pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
 
     if (result != null) {
-      File file = File(result.files.single.path!);
+      setState(() {
+        _pickedFile = File(result.files.single.path!);
+      });
+      print('File selected: ${_pickedFile!.path}');
     } else {
-      print("An error has been occure");
+      print("An error has occurred");
       // User canceled the picker
     }
   }
@@ -90,13 +125,17 @@ class _FormContainerState extends State<FormContainer> {
                 controller: _password,
                 decoration: InputDecoration(
                     labelText: "Enter Your Password", filled: true),
+                obscureText: true,
               ),
               ElevatedButton.icon(
-                  onPressed: pickFile,
-                  icon: Icon(Icons.sd_card),
-                  label: const Text("Pick Image")),
+                onPressed: pickFile,
+                icon: Icon(Icons.sd_card),
+                label: const Text("Pick Image"),
+              ),
               ElevatedButton(
-                  onPressed: registerUser, child: const Text("Sign Up")),
+                onPressed: registerUser,
+                child: const Text("Sign Up"),
+              ),
             ],
           ),
         ),
