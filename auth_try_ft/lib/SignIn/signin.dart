@@ -23,6 +23,10 @@ class MyForm extends StatelessWidget {
       title: appTitle,
       home: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios_new_rounded),
+            onPressed: () => {Navigator.pop(context)},
+          ),
           title: const Text(appTitle),
         ),
         body: const Center(

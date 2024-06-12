@@ -19,6 +19,10 @@ class MyLoginForm extends StatelessWidget {
       title: appTitle,
       home: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => {Navigator.pop(context)},
+          ),
           title: const Text(appTitle),
         ),
         body: const Center(
@@ -40,6 +44,7 @@ class _FormContainerState extends State<FormContainer> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final database = FirebaseDatabase.instance.ref();
+  bool password = true;
   String? imgProfile;
   String? userEmail;
 
@@ -92,6 +97,7 @@ class _FormContainerState extends State<FormContainer> {
               ),
               TextField(
                 controller: _password,
+                obscureText: password,
                 decoration: const InputDecoration(
                     labelText: "Enter Your Password", filled: true),
               ),
@@ -104,7 +110,19 @@ class _FormContainerState extends State<FormContainer> {
               if (userEmail != null && userEmail != 'none')
                 Text(userEmail!)
               else
-                Text("No Email Existed")
+                Text("No Email Existed"),
+              FloatingActionButton(
+                onPressed: () => setState(() {
+                  if (password == true) {
+                    password = false;
+                    print(password);
+                  } else if (password == false) {
+                    password = true;
+                    print(password);
+                  }
+                }),
+                child: Icon(Icons.remove_red_eye),
+              )
             ],
           ),
         ),
