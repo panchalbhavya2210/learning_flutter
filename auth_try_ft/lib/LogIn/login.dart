@@ -1,3 +1,5 @@
+// ignore_for_file: empty_catches
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,7 +22,7 @@ class MyLoginForm extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () => {Navigator.pop(context)},
           ),
           title: const Text(appTitle),
@@ -37,6 +39,7 @@ class FormContainer extends StatefulWidget {
   const FormContainer({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _FormContainerState createState() => _FormContainerState();
 }
 
@@ -63,23 +66,14 @@ class _FormContainerState extends State<FormContainer> {
           final userData = getData.value as Map?;
           setState(() {
             userEmail = userData?['email'] ?? 'none';
-            imgProfile = userData?['publicUrl'] ?? 'none';
+            imgProfile = userData?['photoURL'] ?? 'none';
           });
-        } else {
-          print("User data does not exist.");
-        }
+        } else {}
       }
-      print("User data: $userCredential");
     } on FirebaseAuthException catch (e) {
-      print(e);
       if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      }
-    } catch (e) {
-      print(e);
-    }
+      } else if (e.code == 'email-already-in-use') {}
+    } catch (e) {}
   }
 
   @override
@@ -110,18 +104,16 @@ class _FormContainerState extends State<FormContainer> {
               if (userEmail != null && userEmail != 'none')
                 Text(userEmail!)
               else
-                Text("No Email Existed"),
+                const Text("No Email Existed"),
               FloatingActionButton(
                 onPressed: () => setState(() {
                   if (password == true) {
                     password = false;
-                    print(password);
                   } else if (password == false) {
                     password = true;
-                    print(password);
                   }
                 }),
-                child: Icon(Icons.remove_red_eye),
+                child: const Icon(Icons.remove_red_eye),
               )
             ],
           ),

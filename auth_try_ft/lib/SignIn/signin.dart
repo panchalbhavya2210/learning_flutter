@@ -24,7 +24,7 @@ class MyForm extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded),
             onPressed: () => {Navigator.pop(context)},
           ),
           title: const Text(appTitle),
@@ -41,6 +41,7 @@ class FormContainer extends StatefulWidget {
   const FormContainer({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _FormContainerState createState() => _FormContainerState();
 }
 
@@ -55,14 +56,11 @@ class _FormContainerState extends State<FormContainer> {
 
   Future<void> registerUser() async {
     if (_pickedFile == null) {
-      print('No file selected for upload.');
       return;
     }
 
     final fileName = _pickedFile!.path.split('/').last;
-    final path = 'files/$fileName';
     final file = File(_pickedFile!.path);
-    print(file);
 
     try {
       UserCredential userCredential =
@@ -70,7 +68,6 @@ class _FormContainerState extends State<FormContainer> {
         email: _email.text,
         password: _password.text,
       );
-      print(userCredential.user?.uid);
       final userId = userCredential.user?.uid;
       if (userId != null) {
         final path = '$userId/$fileName';
@@ -80,21 +77,11 @@ class _FormContainerState extends State<FormContainer> {
 
         await database
             .child("users/$userId")
-            .set({"email": _email.text, "publicUrl": downloadURL});
-        print("This is url of file : $downloadURL");
-
-        print('User registered and file uploaded: $userId');
+            .set({"email": _email.text, "photoURL": downloadURL});
       }
-
-      print('User registered and file uploaded: ${userCredential.user?.uid}');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      }
-    } catch (e) {
-      print(e);
+      } else if (e.code == 'email-already-in-use') {}
     }
   }
 
@@ -105,9 +92,7 @@ class _FormContainerState extends State<FormContainer> {
       setState(() {
         _pickedFile = File(result.files.single.path!);
       });
-      print('File selected: ${_pickedFile!.path}');
     } else {
-      print("An error has occurred");
       // User canceled the picker
     }
   }
@@ -116,24 +101,24 @@ class _FormContainerState extends State<FormContainer> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Column(
             children: [
               TextField(
                 controller: _email,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: "Enter Your Email", filled: true),
               ),
               TextField(
                 controller: _password,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: "Enter Your Password", filled: true),
                 obscureText: true,
               ),
               ElevatedButton.icon(
                 onPressed: pickFile,
-                icon: Icon(Icons.sd_card),
+                icon: const Icon(Icons.sd_card),
                 label: const Text("Pick Image"),
               ),
               ElevatedButton(
