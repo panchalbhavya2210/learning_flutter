@@ -1,5 +1,7 @@
 library user;
 
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -7,9 +9,11 @@ String? imgString;
 String? userEmail;
 String? userID;
 
-void main() {
+Future<void> loadUserData() async {
+  final completer = Completer<void>();
   FirebaseAuth.instance.authStateChanges().listen((User? user) async {
     if (user == null) {
+      completer.complete();
     } else {
       final database = FirebaseDatabase.instance.ref();
       userID = user.uid;
@@ -20,6 +24,8 @@ void main() {
         userEmail = userData?['email'];
         imgString = userData?['photoURL'];
       }
+      completer.complete();
     }
   });
+  return completer.future;
 }

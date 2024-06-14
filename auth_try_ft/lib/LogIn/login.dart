@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:auth_try_ft/user_data.dart' as user;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +48,12 @@ class _FormContainerState extends State<FormContainer> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final database = FirebaseDatabase.instance.ref();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   bool password = true;
   String? imgProfile;
   String? userEmail;
@@ -114,7 +121,8 @@ class _FormContainerState extends State<FormContainer> {
                   }
                 }),
                 child: const Icon(Icons.remove_red_eye),
-              )
+              ),
+              Image.network(user.imgString!)
             ],
           ),
         ),
