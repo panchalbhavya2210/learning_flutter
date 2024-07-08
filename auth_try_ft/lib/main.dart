@@ -3,6 +3,7 @@ import 'package:auth_try_ft/SignIn/signin.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 
 import 'user_data.dart' as user;
 
@@ -10,27 +11,52 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  runApp(MaterialApp(
-    initialRoute: '/',
-    routes: {
-      '/signup': (context) => const MyForm(),
-      '/login': (context) => const MyLoginForm(),
-    },
-    theme:
-        ThemeData(primaryColor: Colors.blueAccent, primarySwatch: Colors.red),
-    home: const MyApp(),
-  ));
+  runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _MyAppState createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return DynamicColorBuilder(
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        ColorScheme lightColorScheme =
+            lightDynamic ?? ColorScheme.fromSeed(seedColor: Colors.red);
+        ColorScheme darkColorScheme = darkDynamic ??
+            ColorScheme.fromSeed(
+                seedColor: Colors.red, brightness: Brightness.dark);
+
+        return MaterialApp(
+          initialRoute: '/',
+          routes: {
+            '/signup': (context) => const MyForm(),
+            '/login': (context) => const MyLoginForm(),
+          },
+          theme: ThemeData(
+            colorScheme: lightColorScheme,
+            useMaterial3: true, // Ensures use of Material You design
+          ),
+          darkTheme: ThemeData(
+            colorScheme: darkColorScheme,
+            useMaterial3: true, // Ensures use of Material You design
+          ),
+          themeMode: ThemeMode.system,
+          home: const HomeScreen(),
+        );
+      },
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   late Future<void> _userDataFuture;
 
   @override

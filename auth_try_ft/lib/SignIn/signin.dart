@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dynamic_color/dynamic_color.dart';
 import "package:flutter/material.dart";
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,21 +20,25 @@ class MyForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const appTitle = "Auth App";
-    return MaterialApp(
-      title: appTitle,
-      home: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded),
-            onPressed: () => {Navigator.pop(context)},
+    return DynamicColorBuilder(
+        builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+      return MaterialApp(
+        theme: ThemeData(colorScheme: lightDynamic, useMaterial3: true),
+        title: appTitle,
+        home: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new_rounded),
+              onPressed: () => {Navigator.pop(context)},
+            ),
+            title: const Text(appTitle),
           ),
-          title: const Text(appTitle),
+          body: const Center(
+            child: FormContainer(),
+          ),
         ),
-        body: const Center(
-          child: FormContainer(),
-        ),
-      ),
-    );
+      );
+    });
   }
 }
 
